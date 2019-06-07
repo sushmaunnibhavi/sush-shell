@@ -7,6 +7,9 @@
 #include<sys/wait.h>
 #define LSH_TOK_BUFSIZE 64
 #define LSH_TOK_DELIM " \t\r\n\a"
+char *sh_read_line(void);
+char **sh_split_line(char *line);
+int sh_execute(char **args);
 int init()
 {
   int n;
@@ -25,19 +28,19 @@ void sh_init()
   int status;
   do {
     printf("sush>>>");
-    line=read_line();
-    args=split_line(line);
+    line=(*sh_read_line)();
+    args=(**sh_split_line)(line);
     status=sh_execute(args);
   } while(status);
 }
 
-char *read_line(){
+char *sh_read_line(void){
   char *line=NULL;
   size_t bufsize=0;
   getline(&line,&bufsize,stdin);
   return line;
 }
-char **split_line(char *line)
+char **sh_split_line(char *line)
 {
   int bufsize=LSH_TOK_BUFSIZE,position=0;
   char **tokens = malloc(bufsize * sizeof(char*));
@@ -97,6 +100,13 @@ char *builtin_str[]={
   "help",
   "exit"
 };
+
+/*
+  Function Declarations for builtin shell commands:
+ */
+int sh_cd(char **args);
+int sh_help(char **args);
+int sh_exit(char **args);
 /*
   List of builtin functions
 */
@@ -134,11 +144,12 @@ int sh_cd(char **args)
 
 int sh_help(char **args)
 {
-  int i;
+  int i,y;
   printf("Sushma Unnibhavi's shell\n");
   printf("Type program names and arguments, and hit enter.\n");
   printf("The following are built in:\n");
-  for(i=0;i<sh_num_builtins;i++)
+  y=sh_num_builtins();
+  for(i=0;i<y;i++)
   {
     printf("%s\n",builtin_str[i]);
 
@@ -151,6 +162,29 @@ int sh_exit(char **args)
 {
   return 0;
 }
+
+int sh_execute(char **args)
+{
+  int i,y;
+
+  if (args[0] == NULL) {
+    // An empty command was entered.
+    return 1;
+  }
+  y=sh_num_builtins();
+  for (i = 0; i < y; i++) {
+    /*
+    Check if the entered command is present in the set of builtin commands
+    */
+    if (strcmp(args[0], builtin_str[i]) == 0) {
+      return (*builtin_func[i])(args);
+    }
+  }
+
+  return sh_launch(args);
+}
+
+
 int main(int argc, char **argv) {
   int y;
   y=init();
