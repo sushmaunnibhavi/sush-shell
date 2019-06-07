@@ -101,13 +101,56 @@ char *builtin_str[]={
   List of builtin functions
 */
 int (*builtin_func[])(char**)={
-  &lsh_cd,
-  &lsh_help,
-  &lsh_exit
+  &sh_cd,
+  &sh_help,
+  &sh_exit
 };
+int sh_num_builtins()
+{
+  return sizeof(builtin_str)/sizeof(char*);
 
+}
 
+/*
+  Builtin function implementation
+*/
+int sh_cd(char **args)
+{
+  if(args[1]==NULL)
+  {
+    fprintf(stderr,"sh:expected argument to \"cd\"\n");
 
+  }
+  else
+  {
+    if(chdir(args[1])!=0)
+    {
+      perror("sh");
+    }
+  }
+  return 1;
+  
+}
+
+int sh_help(char **args)
+{
+  int i;
+  printf("Sushma Unnibhavi's shell\n");
+  printf("Type program names and arguments, and hit enter.\n");
+  printf("The following are built in:\n");
+  for(i=0;i<sh_num_builtins;i++)
+  {
+    printf("%s\n",builtin_str[i]);
+
+  }
+  printf("use the man command for information on other programs");
+  return 1;
+}
+
+int sh_exit(char **args)
+{
+  return 0;
+}
 int main(int argc, char **argv) {
   int y;
   y=init();
