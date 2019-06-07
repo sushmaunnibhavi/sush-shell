@@ -87,7 +87,26 @@ int sh_launch(char **args)
     //wait until the child process either exits normally or is killed by a signal
   }
   return 1;
+  //we return 1 to prompt for input again
 }
+/*
+  List of builtin commands
+*/
+char *builtin_str[]={
+  "cd",
+  "help",
+  "exit"
+};
+/*
+  List of builtin functions
+*/
+int (*builtin_func[])(char**)={
+  &lsh_cd,
+  &lsh_help,
+  &lsh_exit
+};
+
+
 
 int main(int argc, char **argv) {
   int y;
