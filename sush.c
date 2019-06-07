@@ -53,6 +53,7 @@ char **split_line(char *line)
   return tokens;
 
 }
+//In order to execute commands we need to create a child process
 int sh_launch(char **args)
 {
   pid_t pid,wpid;
@@ -61,8 +62,33 @@ int sh_launch(char **args)
   if(pid==0)
   {
     //child process
+    //use execvp to pass the program name and an array(vector) of string arguments
+    if(execvp(args[0],args)==-1)
+    {
+      perror("sh");
+    }
+    exit(EXIT_FAILURE);
+
   }
+  else if(pid<0)
+  {
+    //Error forking
+    perror("sh");
+  }
+  else
+  {
+    //parent process
+    do
+    {
+      wpid=waitpid(pid,&status,WUNTRACED);
+
+    } while (!WIFEXITED(status)&&!WIFSIGNALED(status));
+    
+    //wait until the child process either exits normally or is killed by a signal
+  }
+  return 1;
 }
+
 int main(int argc, char **argv) {
   int y;
   y=init();
