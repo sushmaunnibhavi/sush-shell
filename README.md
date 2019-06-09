@@ -6,13 +6,14 @@
 
 '>>' is output after execution after each command.
  
- four commands are implemented:
+ five commands are implemented:
  - cd   : can be used to change the working directory
  - exit : exit from sush shell
  - help : used to find out more about how to use the commands using man page
- 
+ -mkdir :created a new directory
+ -pwd   :displays the present working directory
 
-##Output:
+Output:
 ![alt text](os.png)
 
 ## Stuff to add
